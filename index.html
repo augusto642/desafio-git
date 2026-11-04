@@ -5,675 +5,362 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Desafio Git</title>
 <style>
-  *{margin:0;padding:0;box-sizing:border-box}
-  body{font-family:Arial,Helvetica,sans-serif;color:#1F2937;line-height:1.5;background:#F4F6FB;padding:16px}
-  .jogo{max-width:760px;margin:0 auto}
-  header{background:#0E1E3A;color:#F4F6FB;border-radius:12px;padding:16px 20px;margin-bottom:16px}
-  header h1{font-size:1.6rem}
-  .placar{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:1.05rem;font-weight:700}
-  .placar span b{color:#F5B301}
-  .linha-aluno{margin-top:10px;font-size:1rem}
-  .linha-aluno b{color:#F5B301}
-  .barra{height:14px;background:#334155;border-radius:999px;overflow:hidden;margin-top:10px}
-  .barra i{display:block;height:100%;background:#F5B301;width:0;transition:width .3s}
-  .tela{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
-  .tela h2{font-size:1.4rem;margin-bottom:8px}
-  .tela p{margin:10px 0;font-size:1.1rem}
-  .fase{display:inline-block;background:#0E1E3A;color:#fff;border-radius:999px;padding:4px 14px;font-size:.95rem;font-weight:700;margin-bottom:12px}
-  .pergunta{font-size:1.25rem;font-weight:700;margin:14px 0}
-  button{font-family:inherit;font-size:1.1rem;cursor:pointer;border-radius:10px;border:2px solid #0E1E3A;padding:14px 18px;margin:8px 0;width:100%;background:#fff;color:#0E1E3A;font-weight:700}
-  button:hover{background:#EEF2F7}
-  button:disabled{opacity:.55;cursor:default}
-  .btn-principal{background:#0E1E3A;color:#fff}
-  .btn-principal:hover{background:#1E3A5F}
-  .btn-amarelo{background:#F5B301;border-color:#F5B301;color:#0E1E3A}
-  .btn-amarelo:hover{background:#FFC926}
-  .opcao{text-align:left}
-  .opcao.certa{background:#DCFCE7;border-color:#15803D;color:#14532D}
-  .opcao.errada{background:#FEE2E2;border-color:#B91C1C;color:#7F1D1D}
-  .sequencia{min-height:64px;border:2px dashed #9CA3AF;border-radius:10px;padding:10px;margin:12px 0}
-  .sequencia span{display:inline-block;background:#0E1E3A;color:#fff;border-radius:8px;padding:6px 12px;margin:4px;font-family:Consolas,monospace;font-size:1rem}
-  .sequencia .vazia{color:#6B7280}
-  .fichas{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
-  .ficha{width:auto;background:#EEF2F7;border-color:#334155;font-family:Consolas,monospace;font-size:1rem;padding:10px 14px}
-  .ficha:disabled{opacity:.35}
-  .acoes{display:flex;gap:10px;flex-wrap:wrap}
-  .acoes button{width:auto;flex:1;min-width:140px}
-  .feedback{border-radius:10px;padding:14px 18px;margin:14px 0;font-size:1.1rem;display:none}
-  .feedback.ok{display:block;background:#DCFCE7;border:2px solid #15803D;color:#14532D}
-  .feedback.erro{display:block;background:#FEE2E2;border:2px solid #B91C1C;color:#7F1D1D}
-  .feedback.aviso{display:block;background:#FFFBEB;border:2px solid #F5B301;color:#713F12}
-  .final{text-align:center}
-  .final .pontos{font-size:3rem;font-weight:800;color:#0E1E3A;margin:10px 0}
-  .final .msg{font-size:1.5rem;font-weight:800;margin:10px 0}
-  .regras{font-size:1rem;color:#4B5563}
-  footer{text-align:center;color:#6B7280;font-size:.9rem;margin-top:16px}
-  code{font-family:Consolas,monospace;background:#EEF2F7;padding:2px 6px;border-radius:6px;font-size:1rem}
-  .seq{font-family:Consolas,monospace;background:#EEF2F7;border-radius:8px;padding:10px 14px;margin:8px 0;font-size:1rem}
-  .campo{margin:14px 0}
-  .campo label{display:block;font-weight:700;margin-bottom:4px;font-size:1.1rem}
-  .campo input,.campo select{width:100%;font-family:inherit;font-size:1.1rem;padding:12px;border:2px solid #0E1E3A;border-radius:10px;background:#fff;color:#1F2937}
-  .erro{color:#B91C1C;font-size:1rem;display:none;margin:6px 0;font-weight:700}
-  .resultado-lista{text-align:left;max-width:480px;margin:14px auto}
-  .resultado-lista p{margin:8px 0}
-  @media (max-width:520px){
-    .tela{padding:18px}
-    .pergunta{font-size:1.15rem}
-    button{font-size:1.05rem}
-    .acoes button{width:100%}
-  }
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:Arial,Helvetica,sans-serif;color:#1F2937;line-height:1.5;background:#F4F6FB;padding:16px}
+.jogo{max-width:760px;margin:0 auto}
+header{background:#0E1E3A;color:#F4F6FB;border-radius:12px;padding:16px 20px;margin-bottom:16px}
+header h1{font-size:1.6rem}
+.placar{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:1.05rem;font-weight:700}
+.placar span b{color:#F5B301}
+.linha-aluno{margin-top:10px;font-size:1rem}
+.linha-aluno b{color:#F5B301}
+.barra{height:14px;background:#334155;border-radius:999px;overflow:hidden;margin-top:10px}
+.barra i{display:block;height:100%;background:#F5B301;width:0;transition:width .3s}
+.tela{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.tela h2{font-size:1.4rem;margin-bottom:8px}
+.tela p{margin:10px 0;font-size:1.1rem}
+.fase{display:inline-block;background:#0E1E3A;color:#fff;border-radius:999px;padding:4px 14px;font-size:.95rem;font-weight:700;margin-bottom:12px}
+.pergunta{font-size:1.25rem;font-weight:700;margin:14px 0}
+button{font-family:inherit;font-size:1.1rem;cursor:pointer;border-radius:10px;border:2px solid #0E1E3A;padding:14px 18px;margin:8px 0;width:100%;background:#fff;color:#0E1E3A;font-weight:700}
+button:hover{background:#EEF2F7}
+button:disabled{opacity:.55;cursor:default}
+.btn-principal{background:#0E1E3A;color:#fff}
+.btn-principal:hover{background:#1E3A5F}
+.btn-amarelo{background:#F5B301;border-color:#F5B301;color:#0E1E3A}
+.btn-amarelo:hover{background:#FFC926}
+.opcao{text-align:left}
+.opcao.certa{background:#DCFCE7;border-color:#15803D;color:#14532D}
+.opcao.errada{background:#FEE2E2;border-color:#B91C1C;color:#7F1D1D}
+.sequencia{min-height:64px;border:2px dashed #9CA3AF;border-radius:10px;padding:10px;margin:12px 0}
+.sequencia span{display:inline-block;background:#0E1E3A;color:#fff;border-radius:8px;padding:6px 12px;margin:4px;font-family:Consolas,monospace;font-size:1rem}
+.sequencia.vazia{color:#6B7280}
+.fichas{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+.ficha{width:auto;background:#EEF2F7;border-color:#334155;font-family:Consolas,monospace;font-size:1rem;padding:8px 12px;margin:0}
+.ficha:disabled{opacity:.35}
+.acoes{display:flex;gap:10px;flex-wrap:wrap}
+.acoes button{width:auto;flex:1;min-width:140px}
+.feedback{border-radius:10px;padding:14px 18px;margin:14px 0;font-size:1.1rem;display:none}
+.feedback.ok{display:block;background:#DCFCE7;border:2px solid #15803D;color:#14532D}
+.feedback.erro{display:block;background:#FEE2E2;border:2px solid #B91C1C;color:#7F1D1D}
+.feedback.aviso{display:block;background:#FFFBEB;border:2px solid #F5B301;color:#713F12}
+.final{text-align:center}
+.final .pontos{font-size:3rem;font-weight:800;color:#0E1E3A;margin:10px 0}
+.final .msg{font-size:1.5rem;font-weight:800;margin:10px 0}
+.regras{font-size:1rem;color:#4B5563}
+footer{text-align:center;color:#6B7280;font-size:.9rem;margin-top:16px}
+code{font-family:Consolas,monospace;background:#EEF2F7;padding:2px 6px;border-radius:6px;font-size:1rem}
+.seq{font-family:Consolas,monospace;background:#EEF2F7;border-radius:8px;padding:10px 14px;margin:8px 0;font-size:1.05rem}
+.campo{margin:14px 0}
+.campo label{display:block;font-weight:700;margin-bottom:4px;font-size:1.1rem}
+.campo input,.campo select{width:100%;font-family:inherit;font-size:1.1rem;padding:12px;border:2px solid #0E1E3A;border-radius:10px;background:#fff;color:#1F2937}
+.erro{color:#B91C1C;font-size:1rem;display:none;margin:6px 0;font-weight:700}
+.resultado-lista{text-align:left;max-width:480px;margin:14px auto}
+.resultado-lista p{margin:8px 0}
+@media(max-width:520px){
+.tela{padding:18px}
+.pergunta{font-size:1.15rem}
+button{font-size:1.05rem}
+.acoes button{width:100%}
+}
 </style>
 </head>
 <body>
 <div class="jogo">
-  <header>
-    <h1>Desafio Git</h1>
-    <div class="placar">
-      <span>Pontos: <b id="pontos">0</b> / 100</span>
-      <span id="progresso-texto">Desafio 0 de 10</span>
-    </div>
-    <div class="linha-aluno" id="linha-aluno" style="display:none">Aluno: <b id="aluno-nome"></b> | Turma: <b id="aluno-turma"></b></div>
-    <div class="barra"><i id="barra-progresso"></i></div>
-  </header>
-
-  <div class="tela" id="tela-identificacao">
-    <h2>Quem está jogando?</h2>
-    <p>Escreva seu nome e sua turma antes de começar. O resultado do jogo vai ser salvo com essa identificação.</p>
-    <div class="campo">
-      <label for="nome">Nome completo</label>
-      <input type="text" id="nome" autocomplete="off" placeholder="Ex.: Maria Silva">
-      <p class="erro" id="erro-nome"></p>
-    </div>
-    <div class="campo">
-      <label for="turma">Turma</label>
-      <select id="turma">
-        <option value="">Escolha a turma</option>
-        <option value="201">201</option>
-        <option value="202">202</option>
-        <option value="outra">Outra turma</option>
-      </select>
-      <p class="erro" id="erro-turma"></p>
-    </div>
-    <div class="campo" id="turma-outra-wrap" style="display:none">
-      <label for="turma-outra">Qual turma?</label>
-      <input type="text" id="turma-outra" autocomplete="off" placeholder="Ex.: 203">
-    </div>
-    <p class="regras"><strong>Regras:</strong> responda aos 10 desafios e ganhe pontos para avançar de fase. 10 pontos se acertar de primeira, 5 pontos se acertar depois de errar. Errar não tira pontos — só não soma. Dá para jogar sozinho ou em dupla, cada dupla num computador, comparando os pontos no final.</p>
-    <button class="btn-amarelo" id="btn-continuar">Continuar</button>
-  </div>
-
-  <div class="tela" id="tela-inicio" style="display:none">
-    <h2>Desafio Git</h2>
-    <p>Professor José Augusto</p>
-    <p><strong>Regras:</strong> responda aos 10 desafios e ganhe pontos para avançar de fase.</p>
-    <p class="regras">10 pontos se acertar de primeira, 5 pontos se acertar depois de errar. Errar não tira pontos — só não soma. Dá para jogar sozinho ou em dupla, cada dupla num computador, comparando os pontos no final.</p>
-    <button class="btn-amarelo" id="btn-comecar">Começar</button>
-  </div>
-
-  <div class="tela" id="tela-jogo" style="display:none">
-    <span class="fase" id="fase-nome"></span>
-    <div class="pergunta" id="pergunta"></div>
-    <div id="area-mc"></div>
-    <div id="area-ordem" style="display:none">
-      <p>Clique nos comandos na ordem certa para montar a sequência:</p>
-      <div class="sequencia" id="sequencia"></div>
-      <div class="fichas" id="fichas"></div>
-      <div class="acoes">
-        <button id="btn-desfazer">Desfazer</button>
-        <button id="btn-limpar">Limpar</button>
-        <button class="btn-principal" id="btn-conferir">Conferir</button>
-      </div>
-    </div>
-    <div class="feedback" id="feedback"></div>
-    <div class="acoes">
-      <button class="btn-principal" id="btn-proxima" style="display:none">Próxima</button>
-      <button id="btn-pular" style="display:none">Pular este desafio (0 pontos)</button>
-    </div>
-  </div>
-
-  <div class="tela final" id="tela-final" style="display:none">
-    <h2>Fim do Desafio Git!</h2>
-    <div class="pontos"><span id="pontos-final">0</span> pontos</div>
-    <div class="msg" id="mensagem-final"></div>
-    <p id="resumo-final"></p>
-    <div class="resultado-lista">
-      <p><strong>Aluno:</strong> <span id="final-nome"></span></p>
-      <p><strong>Turma:</strong> <span id="final-turma"></span></p>
-      <p><strong>Acertos:</strong> <span id="final-acertos"></span> de 10</p>
-      <p><strong>Data e hora:</strong> <span id="final-data"></span></p>
-      <p><strong>Código de verificação:</strong> <code id="final-codigo"></code></p>
-    </div>
-    <p>Mostre esta tela ao professor ou entregue o arquivo baixado — o resultado fica salvo neste aparelho e no comprovante, pois o jogo não tem servidor central.</p>
-    <p class="regras" id="planilha-status" style="display:none"></p>
-    <p class="feedback" id="final-feedback"></p>
-    <p class="seq" id="copia-manual" style="display:none"></p>
-    <div class="acoes">
-      <button class="btn-amarelo" id="btn-baixar">Baixar comprovante</button>
-      <button id="btn-copiar">Copiar resultado</button>
-      <button class="btn-amarelo" id="btn-recomecar">Jogar de novo</button>
-      <button id="btn-trocar">Trocar de aluno</button>
-    </div>
-  </div>
-
-  <footer>Professor José Augusto</footer>
+<header>
+<h1>🖥️ Desafio Git</h1>
+<div class="placar"><span>Pontos: <b id="pontos">0</b></span><span>Desafio <b id="atual">0</b>/10</span></div>
+<div class="linha-aluno">Aluno(a): <b id="nomeAluno">—</b></div>
+<div class="barra"><i id="barra"></i></div>
+</header>
+<main class="tela" id="tela"></main>
+<footer>Feito para a aula de Git • v3</footer>
 </div>
-
 <script>
-const PLANILHA_URL = "https://script.google.com/macros/s/AKfycbx8Ja9zx3lv6MB8I-Ji942EhqdUpxItgtJu06VdYdIgT-YR6AbWd8zdJ59wTVDqz9UNmg/exec"; // Cole aqui a URL do Apps Script (Web app) da planilha. Se ficar vazia, o jogo funciona só com o comprovante CSV.
-
-var DESAFIOS = [
-  {fase:"Fase 1 — Aquecimento", tipo:"mc",
-   pergunta:"Complete: para ver o que mudou no repositório, o comando é:",
-   opcoes:["git status","git add .","git push","git log"],
-   certa:0,
-   explicacao:"git status mostra o que mudou e o que já está preparado.",
-   dica:"É o comando que mostra a situação do repositório antes de qualquer outra coisa."},
-  {fase:"Fase 1 — Aquecimento", tipo:"mc",
-   pergunta:"Complete: para preparar tudo o que mudou, o comando é:",
-   opcoes:["git commit","git add .","git push","git clone"],
-   certa:1,
-   explicacao:"git add . prepara tudo o que mudou para ser gravado.",
-   dica:"O ponto significa 'tudo o que mudou aqui'."},
-  {fase:"Fase 1 — Aquecimento", tipo:"mc",
-   pergunta:"Complete: para gravar com mensagem, o comando é:",
-   opcoes:["git commit","git commit -m \"mensagem\"","git save -m \"mensagem\"","git push -m \"mensagem\""],
-   certa:1,
-   explicacao:"git commit -m \"mensagem\" grava as mudanças com uma mensagem.",
-   dica:"A mensagem vai junto, com -m."},
-  {fase:"Fase 1 — Aquecimento", tipo:"mc",
-   pergunta:"Complete: para enviar seus commits ao repositório remoto, o comando é:",
-   opcoes:["git pull","git push","git merge","git checkout"],
-   certa:1,
-   explicacao:"git push envia seus commits para o repositório remoto.",
-   dica:"Push é empurrar para o remoto; pull é puxar de lá."},
-  {fase:"Fase 2 — Ordem certa", tipo:"ordem",
-   pergunta:"Monte o fluxo básico na ordem certa:",
-   passos:["Editar e salvar (Ctrl+S)","git add .","git commit -m \"mensagem\"","git push"],
-   fichas:["git push","git add .","Editar e salvar (Ctrl+S)","git commit -m \"mensagem\""],
-   explicacao:"Fluxo básico: editar e salvar, preparar, gravar e enviar.",
-   dica:"Primeiro se edita, depois se prepara, depois se grava e por último se envia."},
-  {fase:"Fase 2 — Ordem certa", tipo:"ordem",
-   pergunta:"Monte o fluxo com branch na ordem certa:",
-   passos:["git pull","git checkout -b minha-tarefa","Editar + git add . + git commit -m \"mensagem\"","git push","git checkout main","git merge minha-tarefa"],
-   fichas:["git push","git checkout -b minha-tarefa","git merge minha-tarefa","git pull","git checkout main","Editar + git add . + git commit -m \"mensagem\""],
-   explicacao:"Atualiza, ramifica, trabalha, envia, volta ao principal e junta.",
-   dica:"Só dá para juntar o ramo depois de voltar ao ramo principal."},
-  {fase:"Fase 2 — Ordem certa", tipo:"ordem",
-   pergunta:"Seu push foi recusado porque o colega enviou antes. Monte a solução com conflito no meio:",
-   passos:["git pull","Resolver o conflito e salvar","git add .","git commit -m \"Conflito resolvido\"","git push"],
-   fichas:["git push","git add .","git pull","git commit -m \"Conflito resolvido\"","Resolver o conflito e salvar"],
-   explicacao:"Baixa, resolve o conflito, prepara, grava e envia de novo.",
-   dica:"Depois do pull aparece o conflito: resolve primeiro, só depois prepara e grava."},
-  {fase:"Fase 3 — Salve o projeto", tipo:"mc",
-   pergunta:"Seu push foi recusado e apareceu um conflito no arquivo chamada.txt. Qual sequência resolve?",
-   opcoes:[
-     "git pull → resolver o conflito e salvar → git add . → git commit -m \"Conflito resolvido\" → git push",
-     "git push → git pull → git push",
-     "git add . → git commit -m \"Pronto\" → git push",
-     "git checkout -b novo-ramo → git push"],
-   certa:0,
-   explicacao:"Baixar, resolver, preparar, gravar e enviar: o conflito se resolve no meio do caminho.",
-   dica:"Sem baixar antes, não dá para ver o conflito; sem gravar depois, a solução não vai."},
-  {fase:"Fase 3 — Salve o projeto", tipo:"mc",
-   pergunta:"Seu colega apagou o arquivo trabalho.txt e já enviou a exclusão. Como trazer o arquivo de volta?",
-   opcoes:[
-     "git pull → git log --oneline → git checkout &lt;commit-antigo&gt; -- trabalho.txt → git commit -m \"Restaura trabalho.txt\" → git push",
-     "git pull → git push",
-     "git branch novo-ramo → git checkout novo-ramo",
-     "git log --oneline → git commit -m \"Volta\""],
-   certa:0,
-   explicacao:"O arquivo volta do commit anterior; depois é só gravar e enviar de novo.",
-   dica:"Só baixar e enviar não traz o arquivo de volta: é preciso buscá-lo num commit anterior."},
-  {fase:"Fase 3 — Salve o projeto", tipo:"mc",
-   pergunta:"Você percebeu que está no ramo main, mas seu trabalho está no ramo minha-tarefa. O que fazer?",
-   opcoes:[
-     "git branch → git checkout minha-tarefa",
-     "git checkout -b minha-tarefa",
-     "git merge minha-tarefa",
-     "git push"],
-   certa:0,
-   explicacao:"branch mostra onde você está; checkout troca de ramo sem criar nada novo.",
-   dica:"O ramo já existe: não precisa criar, só trocar para ele."}
+"use strict";
+/* ======= CONFIG ======= */
+const TOTAL_DESAFIOS = 10;
+const PLANILHA_URL = "https://docs.google.com/forms/d/e/1FAIpQLSe2v7QyAJA9cN-1P8l1x2R3t4Y5u6I7o8P9a0S1d2F3g4H5j6K7l8M9n0P/viewform";
+const SCRIPT_URL = "";
+const FASE1_PONTOS = 10, FASE2_PONTOS = 20, FASE3_PONTOS = 30;
+/* ======= ESTADO ======= */
+let pontos = 0, indice = 0, nomeAluno = "", turmaAluno = "", acertosFase1 = 0;
+let ordemFase1 = [], ordemFase2 = [];
+/* ======= PERGUNTAS ======= */
+const FASE1_PERGUNTAS = [
+{q:"O que o comando git status mostra?",opcoes:["O estado atual dos arquivos (o que mudou, o que está preparado)","O histórico de commits","A lista de branches remotos","A senha do GitHub"],certa:0},
+{q:"O que o comando git log mostra?",opcoes:["O histórico de commits do repositório","Os arquivos modificados agora","O status da branch atual","Os repositórios do GitHub"],certa:0},
+{q:"O que o comando git diff mostra?",opcoes:["As diferenças do que mudou e ainda não foi preparado","A lista de commits","Os arquivos ignorados pelo .gitignore","O nome da branch atual"],certa:0},
+{q:"Para que serve o comando git add?",opcoes:["Preparar arquivos para o próximo commit (staging)","Criar um commit","Enviar para o GitHub","Apagar arquivos"],certa:0},
+{q:"Para que serve o comando git commit?",opcoes:["Salvar as mudanças preparadas no histórico do repositório","Enviar as mudanças para o GitHub","Preparar arquivos","Criar uma nova branch"],certa:0},
+{q:"Para que serve o comando git push?",opcoes:["Enviar os commits locais para o repositório remoto (GitHub)","Baixar mudanças do GitHub","Criar um commit","Listar branches"],certa:0},
+{q:"Para que serve o comando git pull?",opcoes:["Baixar e integrar as mudanças do repositório remoto","Enviar commits para o GitHub","Desfazer o último commit","Criar uma tag"],certa:0},
+{q:"O que é um commit no Git?",opcoes:["Um ponto salvo no histórico com as mudanças e uma mensagem","Um arquivo de configuração","Uma branch remota","Um comando de download"],certa:0},
+{q:"O que o arquivo .gitignore faz?",opcoes:["Diz ao Git quais arquivos/pastas ignorar","Apaga arquivos do computador","Cria commits automáticos","Lista os colaboradores"],certa:0},
+{q:"O que significa clonar um repositório (git clone)?",opcoes:["Baixar uma cópia completa do repositório para o computador","Enviar arquivos para o GitHub","Criar uma branch nova","Apagar o repositório remoto"],certa:0}
 ];
-
-var idx = 0;
-var pontos = 0;
-var acertos = 0;
-var errou = false;
-var seq = [];
-var travado = false;
-var alunoNome = "";
-var alunoTurma = "";
-var ultimoResultado = null;
-
-function el(id){ return document.getElementById(id); }
-
-function atualizarPlacar(){
-  el("pontos").textContent = pontos;
-  el("progresso-texto").textContent = "Desafio " + Math.min(idx + 1, 10) + " de 10";
-  el("barra-progresso").style.width = (idx * 10) + "%";
-}
-
-function mostrarFeedback(tipo, texto){
-  var f = el("feedback");
-  f.className = "feedback " + tipo;
-  f.textContent = texto;
-}
-
-function esconderFeedback(){
-  var f = el("feedback");
-  f.className = "feedback";
-  f.textContent = "";
-}
-
-function mostrarPular(){
-  el("btn-pular").style.display = "block";
-}
-
-function esconderBotoesFim(){
-  el("btn-proxima").style.display = "none";
-  el("btn-pular").style.display = "none";
-}
-
-function turmaSelecionada(){
-  var sel = el("turma").value;
-  if (sel === "outra") { return el("turma-outra").value.trim(); }
-  return sel;
-}
-
-function validarIdentificacao(){
-  var ok = true;
-  var nome = el("nome").value.trim();
-  var turma = el("turma").value;
-  if (nome.length < 3) {
-    el("erro-nome").textContent = "Escreva seu nome completo (mínimo 3 letras).";
-    el("erro-nome").style.display = "block";
-    ok = false;
-  } else {
-    el("erro-nome").style.display = "none";
-  }
-  if (!turma) {
-    el("erro-turma").textContent = "Escolha sua turma.";
-    el("erro-turma").style.display = "block";
-    ok = false;
-  } else if (turma === "outra" && !el("turma-outra").value.trim()) {
-    el("erro-turma").textContent = "Escreva o nome da sua turma.";
-    el("erro-turma").style.display = "block";
-    ok = false;
-  } else {
-    el("erro-turma").style.display = "none";
-  }
-  return ok;
-}
-
-function continuarIdentificacao(){
-  if (!validarIdentificacao()) return;
-  alunoNome = el("nome").value.trim();
-  alunoTurma = turmaSelecionada();
-  el("aluno-nome").textContent = alunoNome;
-  el("aluno-turma").textContent = alunoTurma;
-  el("linha-aluno").style.display = "block";
-  el("tela-identificacao").style.display = "none";
-  el("tela-inicio").style.display = "block";
-}
-
-function trocarAluno(){
-  alunoNome = "";
-  alunoTurma = "";
-  el("nome").value = "";
-  el("turma").value = "";
-  el("turma-outra").value = "";
-  el("turma-outra-wrap").style.display = "none";
-  el("erro-nome").style.display = "none";
-  el("erro-turma").style.display = "none";
-  el("linha-aluno").style.display = "none";
-  el("tela-final").style.display = "none";
-  el("tela-jogo").style.display = "none";
-  el("tela-inicio").style.display = "none";
-  el("tela-identificacao").style.display = "block";
-}
-
-function sanitizar(str){
-  return str.normalize("NFD").replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-zA-Z0-9]+/g, "_").replace(/^_+|_+$/g, "").toLowerCase();
-}
-
-function gerarCodigo(nome, turma, pontosTotal, dataHora){
-  var base = nome + "|" + turma + "|" + pontosTotal + "|" + dataHora;
-  var h = 5381;
-  for (var i = 0; i < base.length; i++) {
-    h = ((h << 5) + h + base.charCodeAt(i)) >>> 0;
-  }
-  var cod = h.toString(36).toUpperCase();
-  while (cod.length < 6) { cod = "0" + cod; }
-  return cod.slice(0, 6);
-}
-
-function salvarResultado(r){
-  try {
-    var lista = [];
-    var atual = localStorage.getItem("desafioGitResultados");
-    if (atual) {
-      lista = JSON.parse(atual);
-      if (!Array.isArray(lista)) { lista = []; }
-    }
-    lista.push(r);
-    localStorage.setItem("desafioGitResultados", JSON.stringify(lista));
-  } catch (e) {
-    /* Sem localStorage neste aparelho: o comprovante baixado continua valendo. */
-  }
-}
-
-function enviarParaPlanilha(r){
-  var statusEl = el("planilha-status");
-  if (!statusEl) return;
-  if (!PLANILHA_URL) {
-    statusEl.style.display = "none";
-    statusEl.textContent = "";
-    return;
-  }
-  statusEl.style.display = "block";
-  statusEl.textContent = "Salvando na planilha…";
-  var corpo = JSON.stringify({nome: r.nome, turma: r.turma, pontos: r.pontos, acertos: r.acertos, total_desafios: r.total, data_hora: r.dataHora, codigo: r.codigo});
-  try {
-    var controle = null;
-    var tempo = null;
-    if (typeof AbortController !== "undefined") {
-      controle = new AbortController();
-      tempo = setTimeout(function(){ try { controle.abort(); } catch (e) {} }, 5000);
-    }
-    var opcoes = {method: "POST", mode: "no-cors", headers: {"Content-Type": "text/plain"}, body: corpo};
-    if (controle) { opcoes.signal = controle.signal; }
-    var envio = fetch(PLANILHA_URL, opcoes);
-    var limite = new Promise(function(_, rejeitar){
-      setTimeout(function(){ rejeitar(new Error("timeout")); }, 5000);
-    });
-    Promise.race([envio, limite]).then(function(){
-      if (tempo) { clearTimeout(tempo); }
-      statusEl.textContent = "Salvo na planilha ✓";
-    }, function(){
-      if (tempo) { clearTimeout(tempo); }
-      statusEl.textContent = "Não foi possível salvar na planilha — entregue o comprovante CSV.";
-    });
-  } catch (e) {
-    statusEl.textContent = "Não foi possível salvar na planilha — entregue o comprovante CSV.";
-  }
-}
-
-function linhaCSV(r){
-  function limpo(v){ return String(v).replace(/;/g, ",").replace(/\r?\n/g, " "); }
-  return [limpo(r.nome), limpo(r.turma), r.pontos, r.acertos, r.total, limpo(r.dataHora), r.codigo].join(";");
-}
-
-function textoCSV(r){
-  return "\uFEFFnome;turma;pontos;acertos;total_desafios;data_hora;codigo\n" + linhaCSV(r) + "\n";
-}
-
-function nomeArquivoCSV(){
-  var n = sanitizar(alunoNome) || "aluno";
-  var t = sanitizar(alunoTurma) || "turma";
-  return "resultado_git_" + n + "_" + t + ".csv";
-}
-
-function baixarComprovante(){
-  if (!ultimoResultado) return false;
-  try {
-    var blob = new Blob([textoCSV(ultimoResultado)], {type: "text/csv;charset=utf-8"});
-    var url = URL.createObjectURL(blob);
-    var a = document.createElement("a");
-    a.href = url;
-    a.download = nomeArquivoCSV();
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
-    return true;
-  } catch (e) {
-    return false;
-  }
-}
-
-function mostrarFeedbackFinal(tipo, texto){
-  var f = el("final-feedback");
-  f.className = "feedback " + tipo;
-  f.textContent = texto;
-}
-
-function copiarResultado(){
-  if (!ultimoResultado) return;
-  var texto = "Desafio Git — Nome: " + ultimoResultado.nome + " | Turma: " + ultimoResultado.turma + " | Nota: " + ultimoResultado.pontos + "/100 | Acertos: " + ultimoResultado.acertos + "/10 | Código: " + ultimoResultado.codigo;
-  function mostrarTextoManual(){
-    el("copia-manual").textContent = texto;
-    el("copia-manual").style.display = "block";
-  }
-  if (typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.writeText) {
-    navigator.clipboard.writeText(texto).then(function(){
-      mostrarFeedbackFinal("ok", "Resultado copiado! Cole onde o professor pedir.");
-    }, function(){
-      mostrarTextoManual();
-      mostrarFeedbackFinal("erro", "Não foi possível copiar automaticamente. Copie o texto abaixo.");
-    });
-  } else {
-    try {
-      var ta = document.createElement("textarea");
-      ta.value = texto;
-      ta.style.position = "fixed";
-      ta.style.opacity = "0";
-      document.body.appendChild(ta);
-      ta.select();
-      var ok = document.execCommand("copy");
-      document.body.removeChild(ta);
-      if (ok) {
-        mostrarFeedbackFinal("ok", "Resultado copiado! Cole onde o professor pedir.");
-      } else {
-        mostrarTextoManual();
-        mostrarFeedbackFinal("erro", "Não foi possível copiar automaticamente. Copie o texto abaixo.");
-      }
-    } catch (e) {
-      mostrarTextoManual();
-      mostrarFeedbackFinal("erro", "Não foi possível copiar automaticamente. Copie o texto abaixo.");
-    }
-  }
-}
-
-function renderDesafio(){
-  var d = DESAFIOS[idx];
-  travado = false;
-  errou = false;
-  seq = [];
-  esconderFeedback();
-  esconderBotoesFim();
-  el("fase-nome").textContent = d.fase;
-  el("pergunta").textContent = d.pergunta;
-  atualizarPlacar();
-  if (d.tipo === "mc") {
-    el("area-mc").style.display = "block";
-    el("area-ordem").style.display = "none";
-    var html = "";
-    for (var i = 0; i < d.opcoes.length; i++) {
-      html += "<button class=\"opcao\" data-i=\"" + i + "\">" + d.opcoes[i] + "</button>";
-    }
-    el("area-mc").innerHTML = html;
-    var botoes = el("area-mc").querySelectorAll("button");
-    for (var j = 0; j < botoes.length; j++) {
-      botoes[j].addEventListener("click", function(){
-        responderMC(parseInt(this.getAttribute("data-i"), 10), this);
-      });
-    }
-  } else {
-    el("area-mc").style.display = "none";
-    el("area-ordem").style.display = "block";
-    renderFichas();
-    renderSequencia();
-  }
-}
-
-function responderMC(i, botao){
-  if (travado) return;
-  var d = DESAFIOS[idx];
-  if (i === d.certa) {
-    travado = true;
-    botao.className = "opcao certa";
-    pontos += errou ? 5 : 10;
-    acertos++;
-    atualizarPlacar();
-    mostrarFeedback("ok", "Certo! " + d.explicacao);
-    el("btn-proxima").style.display = "block";
-    el("btn-pular").style.display = "none";
-    var botoes = el("area-mc").querySelectorAll("button");
-    for (var k = 0; k < botoes.length; k++) { botoes[k].disabled = true; }
-  } else {
-    errou = true;
-    botao.className = "opcao errada";
-    botao.disabled = true;
-    mostrarFeedback("erro", "Ainda não. Dica: " + d.dica);
-    mostrarPular();
-  }
-}
-
-function renderFichas(){
-  var d = DESAFIOS[idx];
-  var html = "";
-  for (var i = 0; i < d.fichas.length; i++) {
-    var usado = seq.indexOf(d.fichas[i]) !== -1;
-    html += "<button class=\"ficha\" data-i=\"" + i + "\"" + (usado ? " disabled" : "") + ">" + d.fichas[i] + "</button>";
-  }
-  el("fichas").innerHTML = html;
-  var botoes = el("fichas").querySelectorAll("button");
-  for (var j = 0; j < botoes.length; j++) {
-    botoes[j].addEventListener("click", function(){
-      if (travado) return;
-      var d2 = DESAFIOS[idx];
-      seq.push(d2.fichas[parseInt(this.getAttribute("data-i"), 10)]);
-      esconderFeedback();
-      renderFichas();
-      renderSequencia();
-    });
-  }
-}
-
-function renderSequencia(){
-  if (seq.length === 0) {
-    el("sequencia").innerHTML = "<span class=\"vazia\">Sua sequência aparece aqui…</span>";
-  } else {
-    var html = "";
-    for (var i = 0; i < seq.length; i++) {
-      html += "<span>" + (i + 1) + ". " + seq[i] + "</span>";
-    }
-    el("sequencia").innerHTML = html;
-  }
-}
-
-function conferirOrdem(){
-  if (travado) return;
-  var d = DESAFIOS[idx];
-  if (seq.length < d.passos.length) {
-    mostrarFeedback("aviso", "Complete a sequência primeiro: faltam " + (d.passos.length - seq.length) + " passo(s).");
-    return;
-  }
-  var certo = true;
-  for (var i = 0; i < d.passos.length; i++) {
-    if (seq[i] !== d.passos[i]) { certo = false; break; }
-  }
-  if (certo) {
-    travado = true;
-    pontos += errou ? 5 : 10;
-    acertos++;
-    atualizarPlacar();
-    mostrarFeedback("ok", "Certo! " + d.explicacao);
-    el("btn-proxima").style.display = "block";
-    el("btn-pular").style.display = "none";
-  } else {
-    errou = true;
-    mostrarFeedback("erro", "Ainda não. Dica: " + d.dica);
-    mostrarPular();
-  }
-}
-
-function proximo(){
-  idx++;
-  if (idx >= DESAFIOS.length) {
-    mostrarFinal();
-  } else {
-    renderDesafio();
-  }
-}
-
-function mostrarFinal(){
-  var dataHora = new Date().toLocaleString("pt-BR");
-  var codigo = gerarCodigo(alunoNome, alunoTurma, pontos, dataHora);
-  ultimoResultado = {nome: alunoNome, turma: alunoTurma, pontos: pontos, acertos: acertos, total: DESAFIOS.length, dataHora: dataHora, codigo: codigo};
-  salvarResultado(ultimoResultado);
-  enviarParaPlanilha(ultimoResultado);
-  el("tela-jogo").style.display = "none";
-  el("tela-final").style.display = "block";
-  el("barra-progresso").style.width = "100%";
-  el("progresso-texto").textContent = "Desafio 10 de 10";
-  el("pontos-final").textContent = pontos;
-  var msg = "";
-  if (pontos >= 90) { msg = "Mestre Git!"; }
-  else if (pontos >= 60) { msg = "Quase lá, revise os fluxos"; }
-  else { msg = "Vale treinar de novo"; }
-  el("mensagem-final").textContent = msg;
-  el("resumo-final").textContent = "Você fez " + pontos + " de 100 pontos e acertou " + acertos + " de 10 desafios.";
-  el("final-nome").textContent = alunoNome;
-  el("final-turma").textContent = alunoTurma;
-  el("final-acertos").textContent = acertos;
-  el("final-data").textContent = dataHora;
-  el("final-codigo").textContent = codigo;
-  el("copia-manual").style.display = "none";
-  el("copia-manual").textContent = "";
-  var f = el("final-feedback");
-  f.className = "feedback";
-  f.textContent = "";
-  baixarComprovante();
-}
-
-function iniciar(){
-  idx = 0;
-  pontos = 0;
-  acertos = 0;
-  el("tela-identificacao").style.display = "none";
-  el("tela-inicio").style.display = "none";
-  el("tela-final").style.display = "none";
-  el("tela-jogo").style.display = "block";
-  renderDesafio();
-}
-
-el("btn-continuar").addEventListener("click", continuarIdentificacao);
-el("turma").addEventListener("change", function(){
-  el("turma-outra-wrap").style.display = (this.value === "outra") ? "block" : "none";
-  el("erro-turma").style.display = "none";
+const DESAFIOS = [
+{nome:"Aquecimento",tipo:"multipla",fase:1,
+texto:"Você editou o arquivo chamada.txt, mas ainda não preparou nada. Qual comando mostra o que mudou?",
+opcoes:["git status","git push","git clone","git branch"],certa:0},
+{nome:"Mudança preparada",tipo:"multipla",fase:1,
+texto:"Você deu git add na lista de presença. O que o git status deve mostrar agora?",
+opcoes:["A mudança aparece como preparada para commit (staged)","Nada muda no git status","O arquivo some da pasta","O Git faz push sozinho"],certa:0},
+{nome:"Primeiro registro",tipo:"multipla",fase:1,
+texto:"Você preparou a chamada e quer registrar no histórico. Qual comando cria o commit?",
+opcoes:["git commit -m \"chamada do dia\"","git push","git add .","git init"],certa:0},
+{nome:"Publicando",tipo:"multipla",fase:1,
+texto:"O commit está pronto no seu computador. Como ele chega ao GitHub?",
+opcoes:["git push","git commit","git status","git log"],certa:0},
+{nome:"Ordem do fluxo",tipo:"ordem",fase:2,
+texto:"Coloque na ordem em que os comandos acontecem no fluxo básico:",
+itens:["editar o arquivo","git add","git commit","git push"]},
+{nome:"Histórico do projeto",tipo:"ordem",fase:2,
+texto:"Ordene do mais antigo para o mais recente:",
+itens:["git init","primeiro commit","vários commits","git push"]},
+{nome:"Situação real 1",tipo:"multipla",fase:3,
+texto:"Você commitou a chamada, mas percebeu que esqueceu um aluno. O que fazer?",
+opcoes:["Editar o arquivo, git add e fazer um novo commit com a correção","Apagar a pasta .git e começar de novo","Dar git push antes de corrigir","Nada: o commit não pode ser alterado"],certa:0},
+{nome:"Situação real 2",tipo:"multipla",fase:3,
+texto:"Seu colega subiu a chamada dele no GitHub e você precisa dessa versão atualizada. O que fazer?",
+opcoes:["git pull para baixar e integrar as mudanças","git push para enviar","git clone de novo em outra pasta","Esperar o Git atualizar sozinho"],certa:0},
+{nome:"Situação real 3",tipo:"multipla",fase:3,
+texto:"Você quer testar uma ideia sem bagunçar a branch principal. Qual comando cria e troca para a branch \"teste\"?",
+opcoes:["git checkout -b teste","git branch (só lista)","git push teste","git init teste"],certa:0},
+{nome:"Situação real 4",tipo:"multipla",fase:3,
+texto:"Você fez uma mudança errada num arquivo e ainda NÃO deu git add. Como descartar essa mudança?",
+opcoes:["git checkout -- arquivo (descarta mudanças não preparadas)","git push --force","Apagar o arquivo e dar git add","git commit -m \"desfaz\""],certa:0}
+];
+/* ======= TELA INICIAL ======= */
+function telaInicial(){
+const t=document.getElementById("tela");
+t.innerHTML=`
+<h2>📋 Antes de começar</h2>
+<p>Digite seu nome e sua turma. Eles vão aparecer no final junto com sua pontuação.</p>
+<div class="campo">
+<label for="nome">Nome do aluno(a)</label>
+<input id="nome" type="text" placeholder="Ex.: Maria Silva" autocomplete="off">
+<div class="erro" id="erroNome">Digite seu nome para começar.</div>
+</div>
+<div class="campo">
+<label for="turma">Turma</label>
+<select id="turma">
+<option value="">Selecione...</option>
+<option>1º A</option><option>1º B</option><option>1º C</option>
+<option>2º A</option><option>2º B</option><option>2º C</option>
+<option>3º A</option><option>3º B</option><option>3º C</option>
+</select>
+<div class="erro" id="erroTurma">Selecione sua turma para começar.</div>
+</div>
+<div class="regras">
+<p><b>Como funciona:</b> 10 desafios em 3 fases. Fase 1 (4 desafios, 10 pts cada), Fase 2 (2 desafios de ordenar, 20 pts cada), Fase 3 (4 situações reais, 30 pts cada). Máximo: 200 pontos.</p>
+<p>Na Fase 1, você precisa acertar <b>pelo menos 3 de 4</b> para avançar. Nas fases 2 e 3, cada desafio tem <b>2 tentativas</b>.</p>
+</div>
+<button class="btn-principal" id="btnComecar">Começar o desafio</button>`;
+document.getElementById("btnComecar").addEventListener("click",()=>{
+const nome=document.getElementById("nome").value.trim();
+const turma=document.getElementById("turma").value;
+let ok=true;
+if(!nome){document.getElementById("erroNome").style.display="block";ok=false;}
+else{document.getElementById("erroNome").style.display="none";}
+if(!turma){document.getElementById("erroTurma").style.display="block";ok=false;}
+else{document.getElementById("erroTurma").style.display="none";}
+if(!ok)return;
+nomeAluno=nome;turmaAluno=turma;
+document.getElementById("nomeAluno").textContent=nomeAluno+" ("+turmaAluno+")";
+embaralharFase1();
+proximoDesafio();
 });
-el("btn-comecar").addEventListener("click", iniciar);
-el("btn-recomecar").addEventListener("click", iniciar);
-el("btn-trocar").addEventListener("click", trocarAluno);
-el("btn-baixar").addEventListener("click", function(){
-  if (baixarComprovante()) {
-    mostrarFeedbackFinal("ok", "Comprovante baixado. Se não apareceu na pasta de downloads, clique de novo.");
-  } else {
-    mostrarFeedbackFinal("erro", "O navegador bloqueou o download. Clique em \"Baixar comprovante\" de novo.");
-  }
+}
+/* ======= FASE 1 ======= */
+function embaralharFase1(){
+const base=FASE1_PERGUNTAS.map((_,i)=>i);
+for(let i=base.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[base[i],base[j]]=[base[j],base[i]];}
+const escolhidas=base.slice(0,4);
+const desafiosFase1=DESAFIOS.filter(d=>d.fase===1);
+desafiosFase1.forEach((d,k)=>{
+const p=FASE1_PERGUNTAS[escolhidas[k]];
+d.texto=p.q;
+d.opcoes=p.opcoes;
+d.certa=p.certa;
 });
-el("btn-copiar").addEventListener("click", copiarResultado);
-el("btn-proxima").addEventListener("click", proximo);
-el("btn-pular").addEventListener("click", proximo);
-el("btn-desfazer").addEventListener("click", function(){
-  if (travado) return;
-  seq.pop();
-  esconderFeedback();
-  renderFichas();
-  renderSequencia();
-});
-el("btn-limpar").addEventListener("click", function(){
-  if (travado) return;
-  seq = [];
-  esconderFeedback();
-  renderFichas();
-  renderSequencia();
-});
-el("btn-conferir").addEventListener("click", conferirOrdem);
+}
+function telaMultipla(d){
+const t=document.getElementById("tela");
+const nomesFase={1:"Fase 1 • Conceitos",2:"Fase 2 • Ordem",3:"Fase 3 • Situações reais"};
+const pts={1:FASE1_PONTOS,2:FASE2_PONTOS,3:FASE3_PONTOS};
+t.innerHTML=`<span class="fase">${nomesFase[d.fase]} • ${pts[d.fase]} pontos</span>
+<h2>${d.nome}</h2>
+<p class="pergunta">${d.texto}</p>
+<div id="opcoes">${d.opcoes.map((op,i)=>`<button class="opcao" data-i="${i}">${op}</button>`).join("")}</div>
+<div class="feedback" id="fb"></div>`;
+let tentativas=(d.fase===1)?1:2;
+let respondeu=false;
+t.querySelectorAll(".opcao").forEach(btn=>{
+btn.addEventListener("click",()=>{
+if(respondeu)return;
+const i=parseInt(btn.dataset.i,10);
+if(i===d.certa){
+respondeu=true;
+btn.classList.add("certa");
+if(d.fase===1)acertosFase1++;
+pontos+=pts[d.fase];
+fb("ok",`✅ Correto! +${pts[d.fase]} pontos.`);
 atualizarPlacar();
+setTimeout(proximoDesafio,1200);
+}else{
+tentativas--;
+btn.classList.add("errada");
+btn.disabled=true;
+if(tentativas>0){
+fb("aviso",`⚠️ Não foi dessa vez. Tente de novo! (${tentativas} tentativa restante)`);
+}else{
+respondeu=true;
+const certaBtn=t.querySelector(`.opcao[data-i="${d.certa}"]`);
+if(certaBtn)certaBtn.classList.add("certa");
+if(d.fase===1){
+fb("erro","❌ Resposta errada. Na Fase 1 não há segunda chance!");
+setTimeout(proximoDesafio,1800);
+}else{
+fb("erro",`❌ Resposta errada. A certa era: <b>${d.opcoes[d.certa]}</b>`);
+setTimeout(proximoDesafio,2200);
+}
+}
+}
+});
+});
+}
+/* ======= FASE 2 ======= */
+function telaOrdem(d){
+const t=document.getElementById("tela");
+const fichas=[...d.itens];
+for(let i=fichas.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[fichas[i],fichas[j]]=[fichas[j],fichas[i]];}
+d.fichas=fichas;
+let sequencia=[];
+let tentativas=2;
+let respondeu=false;
+t.innerHTML=`<span class="fase">Fase 2 • Ordem • ${FASE2_PONTOS} pontos</span>
+<h2>${d.nome}</h2>
+<p class="pergunta">${d.texto}</p>
+<div class="sequencia vazia" id="seq">Toque nas fichas abaixo na ordem certa...</div>
+<div class="fichas" id="fichas">${fichas.map((f,i)=>`<button class="ficha" data-i="${i}">${f}</button>`).join("")}</div>
+<div class="acoes">
+<button class="btn-amarelo" id="btnLimpar">Limpar</button>
+<button class="btn-principal" id="btnVerificar">Verificar ordem</button>
+</div>
+<div class="feedback" id="fb"></div>`;
+const seqEl=document.getElementById("seq");
+const fichasEl=document.getElementById("fichas");
+function desenhar(){
+if(sequencia.length===0){seqEl.textContent="Toque nas fichas abaixo na ordem certa...";seqEl.classList.add("vazia");}
+else{seqEl.classList.remove("vazia");seqEl.innerHTML=sequencia.map(s=>`<span>${s}</span>`).join("");}
+}
+fichasEl.querySelectorAll(".ficha").forEach(f=>{
+f.addEventListener("click",()=>{
+if(respondeu)return;
+sequencia.push(d.fichas[parseInt(f.dataset.i,10)]);
+f.disabled=true;
+desenhar();
+});
+});
+document.getElementById("btnLimpar").addEventListener("click",()=>{
+if(respondeu)return;
+sequencia=[];
+fichasEl.querySelectorAll(".ficha").forEach(f=>f.disabled=false);
+desenhar();
+fb("aviso","Sequência limpa. Tente de novo!");
+});
+document.getElementById("btnVerificar").addEventListener("click",()=>{
+if(respondeu||sequencia.length===0)return;
+const ok=sequencia.length===d.itens.length&&sequencia.every((v,i)=>v===d.itens[i]);
+if(ok){
+respondeu=true;
+pontos+=FASE2_PONTOS;
+fb("ok",`✅ Ordem perfeita! +${FASE2_PONTOS} pontos.`);
+atualizarPlacar();
+setTimeout(proximoDesafio,1400);
+}else{
+tentativas--;
+if(tentativas>0){
+fb("aviso",`⚠️ Ordem errada. Mais ${tentativas} tentativa! Dica: pense no fluxo de trabalho.`);
+sequencia=[];
+fichasEl.querySelectorAll(".ficha").forEach(f=>f.disabled=false);
+desenhar();
+}else{
+respondeu=true;
+fb("erro",`❌ Não foi. A ordem certa era: <b>${d.itens.join(" → ")}</b>`);
+setTimeout(proximoDesafio,2600);
+}
+}
+});
+}
+/* ======= FLUXO ======= */
+function atualizarPlacar(){
+document.getElementById("pontos").textContent=pontos;
+document.getElementById("atual").textContent=Math.min(indice+1,TOTAL_DESAFIOS);
+document.getElementById("barra").style.width=(indice/TOTAL_DESAFIOS*100)+"%";
+}
+function fb(tipo,html){
+const el=document.getElementById("fb");
+el.className="feedback "+tipo;
+el.innerHTML=html;
+}
+function proximoDesafio(){
+if(indice>=DESAFIOS.length){telaFinal();return;}
+const d=DESAFIOS[indice];
+atualizarPlacar();
+if(indice===4){
+const t=document.getElementById("tela");
+if(acertosFase1<3){
+t.innerHTML=`<h2>⚠️ Fase 1 concluída</h2>
+<p>Você acertou <b>${acertosFase1} de 4</b>. Para avançar, precisa de pelo menos 3 acertos.</p>
+<p>Que tal revisar os conceitos e tentar de novo?</p>
+<button class="btn-principal" id="btnRecomecar">Recomeçar o desafio</button>`;
+document.getElementById("btnRecomecar").addEventListener("click",()=>location.reload());
+return;
+}
+}
+if(d.tipo==="multipla")telaMultipla(d);
+else if(d.tipo==="ordem")telaOrdem(d);
+}
+/* ======= TELA FINAL ======= */
+function telaFinal(){
+document.getElementById("barra").style.width="100%";
+document.getElementById("atual").textContent=TOTAL_DESAFIOS;
+let msg;
+if(pontos>=170)msg="🏆 Excelente! Você domina o básico de Git!";
+else if(pontos>=120)msg="👏 Muito bem! Continue praticando!";
+else if(pontos>=60)msg="👍 Bom começo! Revise os comandos e tente de novo.";
+else msg="📚 Continue estudando! O Git fica mais fácil com prática.";
+const t=document.getElementById("tela");
+t.innerHTML=`<div class="final">
+<h2>🎉 Desafio concluído!</h2>
+<div class="pontos">${pontos}</div>
+<p>pontos de 200</p>
+<div class="msg">${msg}</div>
+<div class="resultado-lista">
+<p><b>Aluno(a):</b> ${nomeAluno}</p>
+<p><b>Turma:</b> ${turmaAluno}</p>
+<p><b>Acertos na Fase 1:</b> ${acertosFase1} de 4</p>
+</div>
+<button class="btn-amarelo" id="btnPlanilha">Enviar resultado para a planilha</button>
+<p class="regras">Ao clicar, um formulário será aberto para você registrar nome, turma e pontos.</p>
+</div>`;
+document.getElementById("btnPlanilha").addEventListener("click",()=>{
+window.open(PLANILHA_URL,"_blank");
+const p=document.createElement("p");
+p.className="regras";
+p.innerHTML="✅ <b>Formulário aberto!</b> Preencha com seus dados.<br>"+
+"<b>Nome:</b> "+nomeAluno+" | <b>Turma:</b> "+turmaAluno+" | <b>Pontos:</b> "+pontos;
+t.appendChild(p);
+if(SCRIPT_URL){
+fetch(SCRIPT_URL,{method:"POST",mode:"no-cors",headers:{"Content-Type":"text/plain"},
+body:JSON.stringify({nome:nomeAluno,turma:turmaAluno,pontos:pontos,data:new Date().toISOString()})}).catch(()=>{});
+}
+});
+indice++;
+}
+/* ======= INÍCIO ======= */
+telaInicial();
 </script>
 </body>
 </html>
