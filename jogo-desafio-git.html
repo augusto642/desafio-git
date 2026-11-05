@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Desafio Git</title>
+<style>
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{font-family:Arial,Helvetica,sans-serif;color:#1F2937;line-height:1.5;background:#F4F6FB;padding:16px}
+  .jogo{max-width:760px;margin:0 auto}
+  header{background:#0E1E3A;color:#F4F6FB;border-radius:12px;padding:16px 20px;margin-bottom:16px}
+  header h1{font-size:1.6rem}
+  .placar{display:flex;justify-content:space-between;gap:12px;margin-top:8px;font-size:1.05rem;font-weight:700}
+  .placar span b{color:#F5B301}
+  .linha-aluno{margin-top:10px;font-size:1rem}
+  .linha-aluno b{color:#F5B301}
+  .barra{height:14px;background:#334155;border-radius:999px;overflow:hidden;margin-top:10px}
+  .barra i{display:block;height:100%;background:#F5B301;width:0;transition:width .3s}
+  .tela{background:#fff;border-radius:12px;padding:24px;box-shadow:0 2px 10px rgba(0,0,0,.08)}
+  .tela h2{font-size:1.4rem;margin-bottom:8px}
+  .tela p{margin:10px 0;font-size:1.1rem}
+  .fase{display:inline-block;background:#0E1E3A;color:#fff;border-radius:999px;padding:4px 14px;font-size:.95rem;font-weight:700;margin-bottom:12px}
+  .pergunta{font-size:1.25rem;font-weight:700;margin:14px 0}
+  button{font-family:inherit;font-size:1.1rem;cursor:pointer;border-radius:10px;border:2px solid #0E1E3A;padding:14px 18px;margin:8px 0;width:100%;background:#fff;color:#0E1E3A;font-weight:700}
+  button:hover{background:#EEF2F7}
+  button:disabled{opacity:.55;cursor:default}
+  .btn-principal{background:#0E1E3A;color:#fff}
+  .btn-principal:hover{background:#1E3A5F}
+  .btn-amarelo{background:#F5B301;border-color:#F5B301;color:#0E1E3A}
+  .btn-amarelo:hover{background:#FFC926}
+  .btn-rever{width:auto;font-size:.95rem;padding:8px 14px;border-width:1px;color:#334155;border-color:#94A3B8}
+  .opcao{text-align:left}
+  .opcao.certa{background:#DCFCE7;border-color:#15803D;color:#14532D}
+  .opcao.errada{background:#FEE2E2;border-color:#B91C1C;color:#7F1D1D}
+  .sequencia{min-height:64px;border:2px dashed #9CA3AF;border-radius:10px;padding:10px;margin:12px 0}
+  .sequencia span{display:inline-block;background:#0E1E3A;color:#fff;border-radius:8px;padding:6px 12px;margin:4px;font-family:Consolas,monospace;font-size:1rem}
+  .sequencia .vazia{color:#6B7280}
+  .fichas{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+  .ficha{width:auto;background:#EEF2F7;border-color:#334155;font-family:Consolas,monospace;font-size:1rem;padding:10px 14px}
+  .ficha:disabled{opacity:.35}
+  .acoes{display:flex;gap:10px;flex-wrap:wrap}
+  .acoes button{width:auto;flex:1;min-width:140px}
+  .feedback{border-radius:10px;padding:14px 18px;margin:14px 0;font-size:1.1rem;display:none}
+  .feedback.ok{display:block;background:#DCFCE7;border:2px solid #15803D;color:#14532D}
+  .feedback.erro{display:block;background:#FEE2E2;border:2px solid #B91C1C;color:#7F1D1D}
+  .feedback.aviso{display:block;background:#FFFBEB;border:2px solid #F5B301;color:#713F12}
+  .final{text-align:center}
+  .final .pontos{font-size:3rem;font-weight:800;color:#0E1E3A;margin:10px 0}
+  .final .msg{font-size:1.5rem;font-weight:800;margin:10px 0}
+  .regras{font-size:1rem;color:#4B5563}
+  footer{text-align:center;color:#6B7280;font-size:.9rem;margin-top:16px}
+  code{font-family:Consolas,monospace;background:#EEF2F7;padding:2px 6px;border-radius:6px;font-size:1rem}
+  .seq{font-family:Consolas,monospace;background:#EEF2F7;border-radius:8px;padding:10px 14px;margin:8px 0;font-size:1rem}
+  .campo{margin:14px 0}
+  .campo label{display:block;font-weight:700;margin-bottom:4px;font-size:1.1rem}
+  .campo input,.campo select{width:100%;font-family:inherit;font-size:1.1rem;padding:12px;border:2px solid #0E1E3A;border-radius:10px;background:#fff;color:#1F2937}
+  .erro{color:#B91C1C;font-size:1rem;display:none;margin:6px 0;font-weight:700}
+  .resultado-lista{text-align:left;max-width:480px;margin:14px auto}
+  .resultado-lista p{margin:8px 0}
+  @media (max-width:520px){
+    .tela{padding:18px}
+    .pergunta{font-size:1.15rem}
+    button{font-size:1.05rem}
+    .acoes button{width:100%}
+  }
+</style>
+</head>
+<body>
+<div class="jogo">
+  <header>
+    <h1>Desafio Git</h1>
+    <div class="placar">
+      <span>Pontos: <b id="pontos">0</b> / 100</span>
+      <span id="progresso-texto">Desafio 0 de 10</span>
+    </div>
+    <div class="linha-aluno" id="linha-aluno" style="display:none">Aluno: <b id="aluno-nome"></b> | Turma: <b id="aluno-turma"></b></div>
+    <div class="barra"><i id="barra-progresso"></i></div>
+  </header>
+
+  <div class="tela" id="tela-identificacao">
+    <h2>Quem está jogando?</h2>
+    <p>Escreva seu nome e sua turma antes de começar. O resultado do jogo vai ser salvo com essa identificação.</p>
+    <div class="campo">
+      <label for="nome">Nome completo</label>
+      <input type="text" id="nome" autocomplete="off" placeholder="Ex.: Maria Silva">
+      <p class="erro" id="erro-nome"></p>
+    </div>
+    <div class="campo">
+      <label for="turma">Turma</label>
+      <select id="turma">
+        <option value="">Escolha a turma</option>
+        <option value="201">201</option>
+        <option value="202">202</option>
+        <option value="outra">Outra turma</option>
+      </select>
+      <p class="erro" id="erro-turma"></p>
+    </div>
+    <div class="campo" id="turma-outra-wrap" style="display:none">
+      <label for="turma-outra">Qual turma?</label>
+      <input type="text" id="turma-outra" autocomplete="off" placeholder="Ex.: 203">
+    </div>
+    <p class="regras"><strong>Regras:</strong> responda aos 10 desafios e ganhe pontos para avançar de fase. 10 pontos se acertar de primeira, 5 pontos se acertar na 2ª tentativa. São 2 tentativas por desafio: se errar as 2, a resposta certa aparece e o desafio vale 0. Errar não tira pontos — só não soma. Dá para jogar sozinho ou em dupla, cada dupla num computador, comparando os pontos no final.</p>
+    <button class="btn-amarelo" id="btn-continuar">Continuar</button>
+  </div>
+
+  <div class="tela" id="tela-inicio" style="display:none">
+    <h2>Desafio Git</h2>
+    <p>Professor José Augusto</p>
+    <p><strong>Regras:</strong> responda aos 10 desafios e ganhe pontos para avançar de fase.</p>
+    <p class="regras">10 pontos se acertar de primeira, 5 pontos se acertar na 2ª tentativa. São 2 tentativas por desafio: se errar as 2, a resposta certa aparece e o desafio vale 0. Errar não tira pontos — só não soma. Dá para jogar sozinho ou em dupla, cada dupla num computador, comparando os pontos no final.</p>
+    <button class="btn-amarelo" id="btn-comecar">Começar</button>
+  </div>
+
+  <div class="tela" id="tela-jogo" style="display:none">
+    <span class="fase" id="fase-nome"></span>
+    <div class="pergunta" id="pergunta"></div>
+    <div id="area-mc"></div>
+    <div id="area-ordem" style="display:none">
+      <p>Clique nos comandos na ordem certa para montar a sequência:</p>
+      <div class="sequencia" id="sequencia"></div>
+      <div class="fichas" id="fichas"></div>
+      <div class="acoes">
+        <button id="btn-desfazer">Desfazer</button>
+        <button id="btn-limpar">Limpar</button>
+        <button class="btn-principal" id="btn-conferir">Conferir</button>
+      </div>
+    </div>
+    <div class="feedback" id="feedback"></div>
+    <button class="btn-rever" id="btn-rever" style="display:none">Rever o cartão "Antes da fase 3"</button>
+    <div class="acoes">
+      <button class="btn-principal" id="btn-proxima" style="display:none">Próxima</button>
+      <button id="btn-pular" style="display:none">Pular este desafio (0 pontos)</button>
+    </div>
+  </div>
+
+  <div class="tela" id="tela-fase3" style="display:none">
+    <h2>Antes da fase 3</h2>
+    <p>Na última fase você vai usar três coisas novas. Guarde bem:</p>
+    <p><strong>git stash</strong> — guarda suas mudanças por um tempo, para você trocar de ramo ou baixar algo sem perder o trabalho.</p>
+    <p><strong>git reset --hard</strong> — apaga commits e mudanças. É perigoso: nunca use para desfazer o trabalho dos outros.</p>
+    <p><strong>Trazer um arquivo de volta</strong> — para buscar um arquivo de um commit antigo: <code>git checkout &lt;commit&gt; -- arquivo</code>.</p>
+    <button class="btn-amarelo" id="btn-fase3">Continuar para a fase 3</button>
+  </div>
+
+  <div class="tela final" id="tela-final" style="display:none">
+    <h2>Fim do Desafio Git!</h2>
+    <div class="pontos"><span id="pontos-final">0</span> pontos</div>
+    <div class="msg" id="mensagem-final"></div>
+    <p id="resumo-final"></p>
+    <div class="resultado-lista">
+      <p><strong>Aluno:</strong> <span id="final-nome"></span></p>
+      <p><strong>Turma:</strong> <span id="final-turma"></span></p>
+      <p><strong>Acertos:</strong> <span id="final-acertos"></span> de 10</p>
+      <p><strong>Data e hora:</strong> <span id="final-data"></span></p>
+      <p><strong>Código de verificação:</strong> <code id="final-codigo"></code></p>
+    </div>
+    <p>Mostre esta tela ao professor ou copie o resultado com o botão abaixo. O resultado fica salvo neste aparelho e na planilha.</p>
+    <p class="regras" id="planilha-status" style="display:none"></p>
+    <p class="feedback" id="final-feedback"></p>
+    <p class="seq" id="copia-manual" style="display:none"></p>
+    <div class="acoes">
+      <button id="btn-copiar">Copiar resultado</button>
+    </div>
+  </div>
+
+  <footer>Professor José Augusto</footer>
+</div>
+
+<script>
+const PLANILHA_URL = "https://script.google.com/macros/s/AKfycbx8Ja9zx3lv6MB8I-Ji942EhqdUpxItgtJu06VdYdIgT-YR6AbWd8zdJ59wTVDqz9UNmg/exec"; // URL do Apps Script (Web app) da planilha. Se ficar vazia, o jogo funciona sem salvar na planilha.
+
+var DESAFIOS = [
+  {fase:"Fase 1 — Aquecimento", tipo:"mc",
+   pergunta:"Você editou o arquivo chamada.txt, mas ainda não preparou nada. Qual comando mostra se ele aparece como modificado e ainda não preparado?",
+   opcoes:["git log","git status","git diff --cached","git branch"],
+   certa:1,
+   explicacao:"git status mostra o estado atual: o que foi modificado, o que está preparado e o que ainda não foi. Já o git log mostra o histórico de commits gravados, não o que mudou agora.",
+   dica:"Um mostra o agora; o outro mostra o passado.",
+   avisos:{2:"O diff --cached mostra só o que já foi preparado — o arquivo ainda não preparado não aparece nele."}},
+  {fase:"Fase 1 — Aquecimento", tipo:"mc",
+   pergunta:"Você editou dois arquivos, mas só quer preparar o trabalho.txt. Qual comando prepara só ele?",
+   opcoes:["git add .","git add trabalho.txt","git add --all","git commit trabalho.txt"],
+   certa:1,
+   explicacao:"git add trabalho.txt prepara só esse arquivo. O ponto (.) e o --all preparam tudo o que mudou.",
+   dica:"O ponto quer dizer 'tudo'; o nome do arquivo quer dizer 'só este'.",
+   avisos:{0:"O ponto prepara tudo o que mudou — para preparar só um arquivo, use o nome dele."}},
+  {fase:"Fase 1 — Aquecimento", tipo:"mc",
+   pergunta:"Você deu git commit sem o -m. O que acontece?",
+   opcoes:["O commit é gravado sem mensagem","Abre um editor para escrever a mensagem","O Git cancela o commit e apaga as mudanças","O commit vai direto para o repositório remoto"],
+   certa:1,
+   explicacao:"Sem -m, o Git abre um editor de texto para você escrever a mensagem. Sem mensagem, não há commit.",
+   dica:"Sem -m, o Git pede a mensagem de outro jeito.",
+   avisos:{0:"O Git nunca grava um commit sem mensagem — sem o -m, ele abre um editor para você escrever uma."}},
+  {fase:"Fase 1 — Aquecimento", tipo:"mc",
+   pergunta:"Você terminou seu commit, mas o remoto tem commits novos do seu colega. Qual comando traz esses commits para o seu computador antes de você enviar os seus?",
+   opcoes:["git push","git pull","git merge","git clone"],
+   certa:1,
+   explicacao:"git pull baixa e junta os commits do remoto. O push faz o caminho inverso: envia os seus.",
+   dica:"Pull puxa para cá; push empurra para lá.",
+   avisos:{0:"O push envia os seus commits — ele não traz os do colega. Para baixar os commits novos, use o pull."}},
+  {fase:"Fase 2 — Ordem certa", tipo:"ordem",
+   pergunta:"Monte o fluxo básico na ordem certa:",
+   passos:["Editar e salvar (Ctrl+S)","git add .","git commit -m \"mensagem\"","git push"],
+   fichas:["git push","git add .","Editar e salvar (Ctrl+S)","git commit -m \"mensagem\""],
+   explicacao:"Fluxo básico: editar e salvar, preparar, gravar e enviar.",
+   dica:"Primeiro se edita, depois se prepara, depois se grava e por último se envia."},
+  {fase:"Fase 2 — Ordem certa", tipo:"ordem",
+   pergunta:"Monte o fluxo com branch na ordem certa:",
+   passos:["git pull","git checkout -b minha-tarefa","Editar o arquivo","git add .","git commit -m \"mensagem\"","git push -u origin minha-tarefa","git checkout main","git merge minha-tarefa","git push"],
+   fichas:["git push","git checkout -b minha-tarefa","git merge minha-tarefa","git pull","git checkout main","git commit -m \"mensagem\"","git add .","Editar o arquivo","git push -u origin minha-tarefa"],
+   explicacao:"Atualiza, ramifica, trabalha e envia o ramo novo com -u para ligar ao remoto; depois volta ao principal, junta e envia de novo. O -u só é preciso na primeira subida de um ramo novo: num clone, o ramo já vem ligado ao remoto, então o push simples basta.",
+   dica:"Só dá para juntar o ramo depois de voltar ao ramo principal."},
+  {fase:"Fase 2 — Ordem certa", tipo:"ordem",
+   pergunta:"Seu push foi recusado porque o colega enviou antes. Monte a solução com conflito no meio:",
+   passos:["git pull","Resolver o conflito e salvar","git add .","git commit -m \"Conflito resolvido\"","git push"],
+   fichas:["git push","git add .","git pull","git commit -m \"Conflito resolvido\"","Resolver o conflito e salvar"],
+   explicacao:"Baixa, resolve o conflito, prepara, grava e envia de novo.",
+   dica:"Depois do pull aparece o conflito: resolve primeiro, só depois prepara e grava."},
+  {fase:"Fase 3 — Salve o projeto", tipo:"mc",
+   pergunta:"Seu push foi recusado e apareceu um conflito no arquivo chamada.txt. Qual sequência resolve?",
+   opcoes:[
+     "git pull → apagar o arquivo chamada.txt → git add . → git commit -m \"Arquivo refeito\" → git push",
+     "git checkout -b novo-ramo → resolver o conflito e salvar → git add . → git commit -m \"Conflito resolvido\" → git push",
+     "git pull → resolver o conflito e salvar → git add . → git commit -m \"Conflito resolvido\" → git push",
+     "git stash → git pull → resolver o conflito e salvar → git add . → git commit -m \"Conflito resolvido\" → git push"],
+   certa:2,
+   explicacao:"Baixar, resolver, preparar, gravar e enviar: o conflito se resolve no meio do caminho.",
+   dica:"Sem baixar antes, não dá para ver o conflito; sem gravar depois, a solução não vai.",
+   avisos:{3:"O stash só guarda as mudanças por um tempo — ele não resolve o conflito sozinho."}},
+  {fase:"Fase 3 — Salve o projeto", tipo:"mc",
+   pergunta:"Seu colega apagou o arquivo trabalho.txt e já enviou a exclusão. Como trazer o arquivo de volta?",
+   opcoes:[
+     "git pull → git log --oneline → git checkout -b trabalho-novo → git commit -m \"Restaura trabalho.txt\" → git push",
+     "git pull → git log --oneline → git checkout &lt;commit-antigo&gt; -- trabalho.txt → git commit -m \"Restaura trabalho.txt\" → git push",
+     "git pull → git branch trabalho-antigo → git checkout trabalho-antigo → git add trabalho.txt → git commit -m \"Restaura trabalho.txt\" → git push",
+     "git pull → git log --oneline → git reset --hard &lt;commit-antigo&gt; → git commit -m \"Restaura trabalho.txt de volta\" → git push"],
+   certa:1,
+   explicacao:"O arquivo volta do commit anterior; depois é só gravar e enviar de novo.",
+   dica:"Só baixar e enviar não traz o arquivo de volta: é preciso buscá-lo num commit anterior.",
+   avisos:{3:"Cuidado: o reset --hard apaga os commits dos colegas — nunca use para desfazer o trabalho dos outros."}},
+  {fase:"Fase 3 — Salve o projeto", tipo:"mc",
+   pergunta:"Você percebeu que está no ramo main, mas seu trabalho está no ramo minha-tarefa. O que fazer?",
+   opcoes:[
+     "git branch → git merge minha-tarefa",
+     "git checkout -b minha-tarefa → git pull",
+     "git branch → git checkout minha-tarefa",
+     "git checkout main → git branch minha-tarefa"],
+   certa:2,
+   explicacao:"branch mostra onde você está; checkout troca de ramo sem criar nada novo.",
+   dica:"O ramo já existe: não precisa criar, só trocar para ele.",
+   avisos:{1:"O -b cria um ramo novo — como o ramo já existe, criar de novo dá erro. Basta trocar para ele com o checkout."}}
+];
+
+var idx = 0;
+var pontos = 0;
+var acertos = 0;
+var errou = false;
+var tentativas = 0;
+var seq = [];
+var travado = false;
+var alunoNome = "";
+var alunoTurma = "";
+var ultimoResultado = null;
+var fase3Mostrada = false;
+var revisaoFase3 = false;
+
+function el(id){ return document.getElementById(id); }
+
+function atualizarPlacar(){
+  el("pontos").textContent = pontos;
+  el("progresso-texto").textContent = "Desafio " + Math.min(idx + 1, 10) + " de 10";
+  el("barra-progresso").style.width = (idx * 10) + "%";
+}
+
+function mostrarFeedback(tipo, texto){
+  var f = el("feedback");
+  f.className = "feedback " + tipo;
+  f.textContent = texto;
+}
+
+function esconderFeedback(){
+  var f = el("feedback");
+  f.className = "feedback";
+  f.textContent = "";
+}
+
+function mostrarPular(){
+  el("btn-pular").style.display = "block";
+}
+
+function esconderBotoesFim(){
+  el("btn-proxima").style.display = "none";
+  el("btn-pular").style.display = "none";
+}
+
+function turmaSelecionada(){
+  var sel = el("turma").value;
+  if (sel === "outra") { return el("turma-outra").value.trim(); }
+  return sel;
+}
+
+function validarIdentificacao(){
+  var ok = true;
+  var nome = el("nome").value.trim();
+  var turma = el("turma").value;
+  if (nome.length < 3) {
+    el("erro-nome").textContent = "Escreva seu nome completo (mínimo 3 letras).";
+    el("erro-nome").style.display = "block";
+    ok = false;
+  } else {
+    el("erro-nome").style.display = "none";
+  }
+  if (!turma) {
+    el("erro-turma").textContent = "Escolha sua turma.";
+    el("erro-turma").style.display = "block";
+    ok = false;
+  } else if (turma === "outra" && !el("turma-outra").value.trim()) {
+    el("erro-turma").textContent = "Escreva o nome da sua turma.";
+    el("erro-turma").style.display = "block";
+    ok = false;
+  } else {
+    el("erro-turma").style.display = "none";
+  }
+  return ok;
+}
+
+function continuarIdentificacao(){
+  if (!validarIdentificacao()) return;
+  alunoNome = el("nome").value.trim();
+  alunoTurma = turmaSelecionada();
+  el("aluno-nome").textContent = alunoNome;
+  el("aluno-turma").textContent = alunoTurma;
+  el("linha-aluno").style.display = "block";
+  el("tela-identificacao").style.display = "none";
+  el("tela-inicio").style.display = "block";
+}
+
+function gerarCodigo(nome, turma, pontosTotal, dataHora){
+  var base = nome + "|" + turma + "|" + pontosTotal + "|" + dataHora;
+  var h = 5381;
+  for (var i = 0; i < base.length; i++) {
+    h = ((h << 5) + h + base.charCodeAt(i)) >>> 0;
+  }
+  var cod = h.toString(36).toUpperCase();
+  while (cod.length < 6) { cod = "0" + cod; }
+  return cod.slice(0, 6);
+}
+
+function salvarResultado(r){
+  try {
+    var lista = [];
+    var atual = localStorage.getItem("desafioGitResultados");
+    if (atual) {
+      lista = JSON.parse(atual);
+      if (!Array.isArray(lista)) { lista = []; }
+    }
+    lista.push(r);
+    localStorage.setItem("desafioGitResultados", JSON.stringify(lista));
+  } catch (e) {
+    /* Sem localStorage neste aparelho: mostre esta tela ao professor. */
+  }
+}
+
+function enviarParaPlanilha(r){
+  var statusEl = el("planilha-status");
+  if (!statusEl) return;
+  if (!PLANILHA_URL) {
+    statusEl.style.display = "none";
+    statusEl.textContent = "";
+    return;
+  }
+  statusEl.style.display = "block";
+  statusEl.textContent = "Salvando na planilha…";
+  var corpo = JSON.stringify({nome: r.nome, turma: r.turma, pontos: r.pontos, acertos: r.acertos, total_desafios: r.total, data_hora: r.dataHora, codigo: r.codigo});
+  try {
+    var controle = null;
+    var tempo = null;
+    if (typeof AbortController !== "undefined") {
+      controle = new AbortController();
+      tempo = setTimeout(function(){ try { controle.abort(); } catch (e) {} }, 5000);
+    }
+    var opcoes = {method: "POST", mode: "no-cors", headers: {"Content-Type": "text/plain"}, body: corpo};
+    if (controle) { opcoes.signal = controle.signal; }
+    var envio = fetch(PLANILHA_URL, opcoes);
+    var limite = new Promise(function(_, rejeitar){
+      setTimeout(function(){ rejeitar(new Error("timeout")); }, 5000);
+    });
+    Promise.race([envio, limite]).then(function(){
+      if (tempo) { clearTimeout(tempo); }
+      statusEl.textContent = "Resultado enviado para a planilha";
+    }, function(){
+      if (tempo) { clearTimeout(tempo); }
+      statusEl.textContent = "Não foi possível salvar na planilha — mostre esta tela ao professor ou copie o resultado.";
+    });
+  } catch (e) {
+    statusEl.textContent = "Não foi possível salvar na planilha — mostre esta tela ao professor ou copie o resultado.";
+  }
+}
+
+function mostrarFeedbackFinal(tipo, texto){
+  var f = el("final-feedback");
+  f.className = "feedback " + tipo;
+  f.textContent = texto;
+}
+
+function copiarResultado(){
+  if (!ultimoResultado) return;
+  var texto = "Desafio Git — Nome: " + ultimoResultado.nome + " | Turma: " + ultimoResultado.turma + " | Nota: " + ultimoResultado.pontos + "/100 | Acertos: " + ultimoResultado.acertos + "/10 | Código: " + ultimoResultado.codigo;
+  function mostrarTextoManual(){
+    el("copia-manual").textContent = texto;
+    el("copia-manual").style.display = "block";
+  }
+  if (typeof navigator !== "undefined" && navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(texto).then(function(){
+      mostrarFeedbackFinal("ok", "Resultado copiado! Cole onde o professor pedir.");
+    }, function(){
+      mostrarTextoManual();
+      mostrarFeedbackFinal("erro", "Não foi possível copiar automaticamente. Copie o texto abaixo.");
+    });
+  } else {
+    try {
+      var ta = document.createElement("textarea");
+      ta.value = texto;
+      ta.style.position = "fixed";
+      ta.style.opacity = "0";
+      document.body.appendChild(ta);
+      ta.select();
+      var ok = document.execCommand("copy");
+      document.body.removeChild(ta);
+      if (ok) {
+        mostrarFeedbackFinal("ok", "Resultado copiado! Cole onde o professor pedir.");
+      } else {
+        mostrarTextoManual();
+        mostrarFeedbackFinal("erro", "Não foi possível copiar automaticamente. Copie o texto abaixo.");
+      }
+    } catch (e) {
+      mostrarTextoManual();
+      mostrarFeedbackFinal("erro", "Não foi possível copiar automaticamente. Copie o texto abaixo.");
+    }
+  }
+}
+
+function renderDesafio(){
+  var d = DESAFIOS[idx];
+  travado = false;
+  errou = false;
+  tentativas = 0;
+  seq = [];
+  esconderFeedback();
+  esconderBotoesFim();
+  el("fase-nome").textContent = d.fase;
+  el("pergunta").textContent = d.pergunta;
+  el("btn-rever").style.display = (idx >= 7) ? "block" : "none";
+  atualizarPlacar();
+  if (d.tipo === "mc") {
+    el("area-mc").style.display = "block";
+    el("area-ordem").style.display = "none";
+    var html = "";
+    for (var i = 0; i < d.opcoes.length; i++) {
+      html += "<button class=\"opcao\" data-i=\"" + i + "\">" + d.opcoes[i] + "</button>";
+    }
+    el("area-mc").innerHTML = html;
+    var botoes = el("area-mc").querySelectorAll("button");
+    for (var j = 0; j < botoes.length; j++) {
+      botoes[j].addEventListener("click", function(){
+        responderMC(parseInt(this.getAttribute("data-i"), 10), this);
+      });
+    }
+  } else {
+    el("area-mc").style.display = "none";
+    el("area-ordem").style.display = "block";
+    renderFichas();
+    renderSequencia();
+  }
+}
+
+function responderMC(i, botao){
+  if (travado) return;
+  var d = DESAFIOS[idx];
+  if (i === d.certa) {
+    travado = true;
+    botao.className = "opcao certa";
+    pontos += errou ? 5 : 10;
+    acertos++;
+    atualizarPlacar();
+    mostrarFeedback("ok", "Certo! " + d.explicacao);
+    el("btn-proxima").style.display = "block";
+    el("btn-pular").style.display = "none";
+    var botoes = el("area-mc").querySelectorAll("button");
+    for (var k = 0; k < botoes.length; k++) { botoes[k].disabled = true; }
+  } else {
+    errou = true;
+    tentativas++;
+    botao.className = "opcao errada";
+    botao.disabled = true;
+    var notaPerigo = (d.avisos && d.avisos[i]) ? " " + d.avisos[i] : "";
+    if (tentativas >= 2) {
+      travado = true;
+      var todos = el("area-mc").querySelectorAll("button");
+      for (var k = 0; k < todos.length; k++) { todos[k].disabled = true; }
+      if (todos[d.certa]) { todos[d.certa].className = "opcao certa"; }
+      mostrarFeedback("erro", "Você usou as 2 tentativas. " + d.explicacao + notaPerigo);
+      el("btn-proxima").style.display = "block";
+      el("btn-pular").style.display = "none";
+    } else {
+      mostrarFeedback("erro", "Ainda não. Dica: " + d.dica + notaPerigo);
+      mostrarPular();
+    }
+  }
+}
+
+function renderFichas(){
+  var d = DESAFIOS[idx];
+  var html = "";
+  for (var i = 0; i < d.fichas.length; i++) {
+    var usado = seq.indexOf(d.fichas[i]) !== -1;
+    html += "<button class=\"ficha\" data-i=\"" + i + "\"" + (usado ? " disabled" : "") + ">" + d.fichas[i] + "</button>";
+  }
+  el("fichas").innerHTML = html;
+  var botoes = el("fichas").querySelectorAll("button");
+  for (var j = 0; j < botoes.length; j++) {
+    botoes[j].addEventListener("click", function(){
+      if (travado) return;
+      var d2 = DESAFIOS[idx];
+      seq.push(d2.fichas[parseInt(this.getAttribute("data-i"), 10)]);
+      esconderFeedback();
+      renderFichas();
+      renderSequencia();
+    });
+  }
+}
+
+function renderSequencia(){
+  if (seq.length === 0) {
+    el("sequencia").innerHTML = "<span class=\"vazia\">Sua sequência aparece aqui…</span>";
+  } else {
+    var html = "";
+    for (var i = 0; i < seq.length; i++) {
+      html += "<span>" + (i + 1) + ". " + seq[i] + "</span>";
+    }
+    el("sequencia").innerHTML = html;
+  }
+}
+
+function conferirOrdem(){
+  if (travado) return;
+  var d = DESAFIOS[idx];
+  if (seq.length < d.passos.length) {
+    mostrarFeedback("aviso", "Complete a sequência primeiro: faltam " + (d.passos.length - seq.length) + " passo(s).");
+    return;
+  }
+  var certo = true;
+  for (var i = 0; i < d.passos.length; i++) {
+    if (seq[i] !== d.passos[i]) { certo = false; break; }
+  }
+  if (certo) {
+    travado = true;
+    pontos += errou ? 5 : 10;
+    acertos++;
+    atualizarPlacar();
+    mostrarFeedback("ok", "Certo! " + d.explicacao);
+    el("btn-proxima").style.display = "block";
+    el("btn-pular").style.display = "none";
+  } else {
+    errou = true;
+    tentativas++;
+    if (tentativas >= 2) {
+      travado = true;
+      seq = d.passos.slice();
+      renderSequencia();
+      renderFichas();
+      mostrarFeedback("erro", "Você usou as 2 tentativas. A ordem certa está acima. " + d.explicacao);
+      el("btn-proxima").style.display = "block";
+      el("btn-pular").style.display = "none";
+    } else {
+      var fora = [];
+      for (var j = 0; j < d.passos.length; j++) {
+        if (seq[j] !== d.passos[j]) { fora.push(j + 1); }
+      }
+      var textoFora;
+      if (fora.length === 1) {
+        textoFora = "O passo " + fora[0] + " está fora de lugar. ";
+      } else {
+        textoFora = "Os passos " + fora.slice(0, -1).join(", ") + " e " + fora[fora.length - 1] + " estão fora de lugar. ";
+      }
+      mostrarFeedback("erro", "Ainda não. " + textoFora + "Dica: " + d.dica);
+      mostrarPular();
+    }
+  }
+}
+
+function continuarFase3(){
+  if (revisaoFase3) {
+    revisaoFase3 = false;
+    el("btn-fase3").textContent = "Continuar para a fase 3";
+    el("tela-fase3").style.display = "none";
+    el("tela-jogo").style.display = "block";
+    return;
+  }
+  el("tela-fase3").style.display = "none";
+  el("tela-jogo").style.display = "block";
+  renderDesafio();
+}
+
+function reverFase3(){
+  revisaoFase3 = true;
+  el("btn-fase3").textContent = "Voltar para o desafio";
+  el("tela-jogo").style.display = "none";
+  el("tela-fase3").style.display = "block";
+}
+
+function proximo(){
+  idx++;
+  if (idx >= DESAFIOS.length) {
+    mostrarFinal();
+    return;
+  }
+  if (idx === 7 && !fase3Mostrada) {
+    fase3Mostrada = true;
+    atualizarPlacar();
+    el("tela-jogo").style.display = "none";
+    el("tela-fase3").style.display = "block";
+    return;
+  }
+  renderDesafio();
+}
+
+function mostrarFinal(){
+  var dataHora = new Date().toLocaleString("pt-BR");
+  var codigo = gerarCodigo(alunoNome, alunoTurma, pontos, dataHora);
+  ultimoResultado = {nome: alunoNome, turma: alunoTurma, pontos: pontos, acertos: acertos, total: DESAFIOS.length, dataHora: dataHora, codigo: codigo};
+  salvarResultado(ultimoResultado);
+  enviarParaPlanilha(ultimoResultado);
+  el("tela-jogo").style.display = "none";
+  el("tela-final").style.display = "block";
+  el("barra-progresso").style.width = "100%";
+  el("progresso-texto").textContent = "Desafio 10 de 10";
+  el("pontos-final").textContent = pontos;
+  var msg = "";
+  if (pontos >= 90) { msg = "Mestre Git!"; }
+  else if (pontos >= 60) { msg = "Quase lá, revise os fluxos"; }
+  else { msg = "Recarregue a página para jogar de novo"; }
+  el("mensagem-final").textContent = msg;
+  el("resumo-final").textContent = "Você fez " + pontos + " de 100 pontos e acertou " + acertos + " de 10 desafios.";
+  el("final-nome").textContent = alunoNome;
+  el("final-turma").textContent = alunoTurma;
+  el("final-acertos").textContent = acertos;
+  el("final-data").textContent = dataHora;
+  el("final-codigo").textContent = codigo;
+  el("copia-manual").style.display = "none";
+  el("copia-manual").textContent = "";
+  var f = el("final-feedback");
+  f.className = "feedback";
+  f.textContent = "";
+}
+
+function iniciar(){
+  idx = 0;
+  pontos = 0;
+  acertos = 0;
+  fase3Mostrada = false;
+  el("tela-identificacao").style.display = "none";
+  el("tela-inicio").style.display = "none";
+  el("tela-final").style.display = "none";
+  el("tela-fase3").style.display = "none";
+  el("tela-jogo").style.display = "block";
+  renderDesafio();
+}
+
+el("btn-continuar").addEventListener("click", continuarIdentificacao);
+el("turma").addEventListener("change", function(){
+  el("turma-outra-wrap").style.display = (this.value === "outra") ? "block" : "none";
+  el("erro-turma").style.display = "none";
+});
+el("btn-comecar").addEventListener("click", iniciar);
+el("btn-fase3").addEventListener("click", continuarFase3);
+el("btn-rever").addEventListener("click", reverFase3);
+el("btn-copiar").addEventListener("click", copiarResultado);
+el("btn-proxima").addEventListener("click", proximo);
+el("btn-pular").addEventListener("click", proximo);
+el("btn-desfazer").addEventListener("click", function(){
+  if (travado) return;
+  seq.pop();
+  esconderFeedback();
+  renderFichas();
+  renderSequencia();
+});
+el("btn-limpar").addEventListener("click", function(){
+  if (travado) return;
+  seq = [];
+  esconderFeedback();
+  renderFichas();
+  renderSequencia();
+});
+el("btn-conferir").addEventListener("click", conferirOrdem);
+atualizarPlacar();
+</script>
+</body>
+</html>
